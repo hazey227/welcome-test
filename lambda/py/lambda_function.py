@@ -1,267 +1,140 @@
 # -*- coding: utf-8 -*-
-
 import logging
-import json
+import ask_sdk_core.utils as ask_utils
 
 from ask_sdk_core.skill_builder import SkillBuilder
-from ask_sdk_core.dispatch_components import (
-    AbstractRequestHandler, AbstractExceptionHandler,
-    AbstractRequestInterceptor, AbstractResponseInterceptor)
-from ask_sdk_core.utils import is_request_type, is_intent_name, viewport
+from ask_sdk_core.dispatch_components import AbstractRequestHandler
+from ask_sdk_core.dispatch_components import AbstractExceptionHandler
 from ask_sdk_core.handler_input import HandlerInput
 
-from ask_sdk_model.ui import SimpleCard
 from ask_sdk_model import Response
-from ask_sdk_model.interfaces.alexa.presentation.apl import (
-    RenderDocumentDirective, ExecuteCommandsDirective, SpeakItemCommand,
-    AutoPageCommand, HighlightMode)
 
-from typing import Dict, Any
-
-SKILL_NAME = "Pager Karaoke"
-HELP_MESSAGE = ("You can say, show me pager, show me karaoke, "
-                "or show me device information!")
-HELP_REPROMPT = ("You can say, show me pager, show me karaoke, "
-                 "or show me device information!")
-STOP_MESSAGE = "Goodbye!"
-
-sb = SkillBuilder()
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 
-def _load_apl_document(file_path):
-    # type: (str) -> Dict[str, Any]
-    """Load the apl json document at the path into a dict object."""
-    with open(file_path) as f:
-        return json.load(f)
-
-# Built-in Intent Handlers
 class LaunchRequestHandler(AbstractRequestHandler):
     """Handler for Skill Launch."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        return is_request_type("LaunchRequest")(handler_input)
+
+        return ask_utils.is_request_type("LaunchRequest")(handler_input)
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        logger.info("In LaunchRequest")
+        speak_output = ('Lios em chaniavu Cocorit museo yoeme, <break time="2s"/> '
+                  '<lang xml:lang="es-MX">Bienvenido al Cocorit museo de los yaquis, </lang><break time="2s"/>'
+                  'Welcome to Cocorit Museum of the Yaquis')
 
-        speech = ('Welcome to the Pager Karaoke Device skill! '
-                  'You can say, show me pager, show me karaoke, or '
-                  'show me device information!')
-
-        handler_input.response_builder.speak(speech).ask(speech).set_card(
-            SimpleCard(SKILL_NAME, speech))
-        return handler_input.response_builder.response
-
-
-# Built-in Intent Handlers
-class PagerIntentHandler(AbstractRequestHandler):
-    """Handler for Pager Intent."""
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return is_intent_name("PagerIntent")(handler_input)
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        logger.info("In PagerIntent")
-
-        speech = 'This is the pager template!'
-
-        handler_input.response_builder.speak(speech).add_directive(
-            RenderDocumentDirective(
-                token="pagerToken",
-                document=_load_apl_document("pager.json"),
-                datasources={
-                    'pagerTemplateData': {
-                        'type': 'object',
-                        'properties': {
-                            'hintString': 'try the blue cheese!'
-                        },
-                        'transformers': [
-                            {
-                                'inputPath': 'hintString',
-                                'transformer': 'textToHint'
-                            }
-                        ]
-                    }
-                }
-            )
-        ).add_directive(
-            ExecuteCommandsDirective(
-                token="pagerToken",
-                commands=[
-                    AutoPageCommand(
-                        component_id="pagerComponentId",
-                        duration=5000)
-                ]
-            )
+        return (
+            handler_input.response_builder
+                .speak(speak_output)
+                .ask(speak_output)
+               #.withShouldEndSession(true)
+               #.shouldEndSession(true)
+                .response
         )
 
-        return handler_input.response_builder.response
 
-
-class KaraokeIntentHandler(AbstractRequestHandler):
-    """Handler for Karaoke Intent."""
+class HelloWorldIntentHandler(AbstractRequestHandler):
+    """Handler for Hello World Intent."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        return is_intent_name("KaraokeIntent")(handler_input)
+        return ask_utils.is_intent_name("HelloWorldIntent")(handler_input)
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        logger.info("In Karaoke Intent")
-
-        speech = 'This is the karaoke template!'
-
-        handler_input.response_builder.speak(speech).add_directive(
-            RenderDocumentDirective(
-                token="karaokeToken",
-                document=_load_apl_document("karaoke.json"),
-                datasources={
-                    'karaokeTemplateData': {
-                        'type': 'object',
-                        'objectId': 'karaokeSample',
-                        'properties': {
-                            'karaokeSsml': '<speak>We’re excited to announce a new video training series from A Cloud Guru on Alexa skill development. The free training series called Alexa Devs walks new developers and non-developers through how to build Alexa skills from start to finish. You’ll also learn how to enhance your skill using persistence, Speechcons, and SSML to create more engaging voice experiences for customers. Check out the first episode on how to build your first Alexa skill here.</speak>',
-                            'hintString': 'try the blue cheese!'
-                        },
-                        'transformers': [
-                            {
-                                'inputPath': 'karaokeSsml',
-                                'outputName': 'karaokeSpeech',
-                                'transformer': 'ssmlToSpeech'
-                            },
-                            {
-                                'inputPath': 'karaokeSsml',
-                                'outputName': 'karaokeText',
-                                'transformer': 'ssmlToText'
-                            },
-                            {
-                                'inputPath': 'hintString',
-                                'transformer': 'textToHint'
-                            }
-                        ]
-                    }
-                }
-            )
-        ).add_directive(
-            ExecuteCommandsDirective(
-                token="karaokeToken",
-                commands=[
-                    SpeakItemCommand(
-                        component_id="karaokespeechtext",
-                        highlight_mode=HighlightMode.LINE)
-                ]
-            )
+        speak_output = ('Lios em chaniavu Cocorit museo yoeme, <break time="2s"/> '
+                  '<lang xml:lang="es-MX">Bienvenido al Cocorit museo de los yaquis, </lang><break time="2s"/>'
+                  'Welcome to Cocorit Museum of the Yaquis')
+                  
+        return (
+            handler_input.response_builder
+                .speak(speak_output)
+                .ask("Welcome to Cocorit Museum of the Yaquis")
+                .set_should_end_session(True)
+                #.withShouldEndSession(true)
+                .response
         )
-
-        return handler_input.response_builder.response
-
-
-class DeviceIntentHandler(AbstractRequestHandler):
-    """Handler for Device Information Intent."""
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return is_intent_name("DeviceIntent")(handler_input)
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        logger.info("In Device Intent")
-
-        speech = 'This device is a '
-
-        if viewport.get_viewport_profile == viewport.ViewportProfile.HUB_LANDSCAPE_LARGE:
-            speech += 'hub landscape large'
-        elif viewport.get_viewport_profile == viewport.ViewportProfile.HUB_LANDSCAPE_MEDIUM:
-            speech += 'hub landscape medium'
-        elif viewport.get_viewport_profile == viewport.ViewportProfile.HUB_LANDSCAPE_SMALL:
-            speech += 'hub landscape small'
-        elif viewport.get_viewport_profile == viewport.ViewportProfile.HUB_ROUND_SMALL:
-            speech += 'hub round small'
-        elif viewport.get_viewport_profile == viewport.ViewportProfile.TV_LANDSCAPE_XLARGE:
-            speech += 'tv landscape extra large'
-        elif viewport.get_viewport_profile == viewport.ViewportProfile.MOBILE_LANDSCAPE_SMALL:
-            speech += 'mobile landscape small'
-        else: 
-            speech += 'echo device!'
-
-        handler_input.response_builder.speak(speech).add_directive(
-            RenderDocumentDirective(
-                document=_load_apl_document("devices.json"),
-                datasources={
-                    'deviceTemplateData': {
-                        'type': 'object',
-                        'objectId': 'deviceSample',
-                        'properties': {
-                            'deviceName': viewport.get_viewport_profile(
-                                handler_input.request_envelope),
-                            'hintString': 'try and buy more devices!'
-                        },
-                        'transformers': [
-                            {
-                                'inputPath': 'hintString',
-                                'transformer': 'textToHint'
-                            }
-                        ]
-                    }
-                }
-            )
-        )
-
-        return handler_input.response_builder.response
 
 
 class HelpIntentHandler(AbstractRequestHandler):
     """Handler for Help Intent."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        return is_intent_name("AMAZON.HelpIntent")(handler_input)
+        return ask_utils.is_intent_name("AMAZON.HelpIntent")(handler_input)
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        logger.info("In HelpIntentHandler")
+        speak_output = "You can say hello to me! How can I help?"
 
-        handler_input.response_builder.speak(HELP_MESSAGE).ask(
-            HELP_REPROMPT).set_card(SimpleCard(
-                SKILL_NAME, HELP_MESSAGE))
-        return handler_input.response_builder.response
+        return (
+            handler_input.response_builder
+                .speak(speak_output)
+                .ask(speak_output)
+                .response
+        )
 
 
 class CancelOrStopIntentHandler(AbstractRequestHandler):
     """Single handler for Cancel and Stop Intent."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        return (is_intent_name("AMAZON.CancelIntent")(handler_input) or
-                is_intent_name("AMAZON.StopIntent")(handler_input))
+        return (ask_utils.is_intent_name("AMAZON.CancelIntent")(handler_input) or
+                ask_utils.is_intent_name("AMAZON.StopIntent")(handler_input))
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        logger.info("In CancelOrStopIntentHandler")
+        speak_output = "Goodbye!"
 
-        handler_input.response_builder.speak(STOP_MESSAGE)
-        return handler_input.response_builder.response
+        return (
+            handler_input.response_builder
+                .speak(speak_output)
+                .response
+        )
 
 
 class SessionEndedRequestHandler(AbstractRequestHandler):
     """Handler for Session End."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        return is_request_type("SessionEndedRequest")(handler_input)
+        return ask_utils.is_request_type("SessionEndedRequest")(handler_input)
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        logger.info("In SessionEndedRequestHandler")
 
-        logger.info("Session ended reason: {}".format(
-            handler_input.request_envelope.request.reason))
+        # Any cleanup logic goes here.
+
         return handler_input.response_builder.response
 
 
-# Exception Handler
+class IntentReflectorHandler(AbstractRequestHandler):
+    """The intent reflector is used for interaction model testing and debugging.
+    It will simply repeat the intent the user said. You can create custom handlers
+    for your intents by defining them above, then also adding them to the request
+    handler chain below.
+    """
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        return ask_utils.is_request_type("IntentRequest")(handler_input)
+
+    def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
+        intent_name = ask_utils.get_intent_name(handler_input)
+        speak_output = "You just triggered " + intent_name + "."
+
+        return (
+            handler_input.response_builder
+                .speak(speak_output)
+                # .ask("add a reprompt if you want to keep the session open for the user to respond")
+                .response
+        )
+
+
 class CatchAllExceptionHandler(AbstractExceptionHandler):
-    """Catch all exception handler, log exception and
-    respond with custom message.
+    """Generic error handling to capture any syntax or routing errors. If you receive an error
+    stating the request handler chain is not found, you have not implemented a handler for
+    the intent being invoked or included it in the skill builder below.
     """
     def can_handle(self, handler_input, exception):
         # type: (HandlerInput, Exception) -> bool
@@ -269,46 +142,31 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
 
     def handle(self, handler_input, exception):
         # type: (HandlerInput, Exception) -> Response
-        logger.info("In CatchAllExceptionHandler")
         logger.error(exception, exc_info=True)
 
-        handler_input.response_builder.speak('EXCEPTION_MESSAGE').ask(
-            HELP_REPROMPT)
+        speak_output = "Sorry, I had trouble doing what you asked. Please try again."
 
-        return handler_input.response_builder.response
+        return (
+            handler_input.response_builder
+                .speak(speak_output)
+                .ask(speak_output)
+                .response
+        )
 
-
-# Request and Response loggers
-class RequestLogger(AbstractRequestInterceptor):
-    """Log the alexa requests."""
-    def process(self, handler_input):
-        # type: (HandlerInput) -> None
-        logger.debug("Alexa Request: {}".format(
-            handler_input.request_envelope.request))
-
-
-class ResponseLogger(AbstractResponseInterceptor):
-    """Log the alexa responses."""
-    def process(self, handler_input, response):
-        # type: (HandlerInput, Response) -> None
-        logger.debug("Alexa Response: {}".format(response))
+# The SkillBuilder object acts as the entry point for your skill, routing all request and response
+# payloads to the handlers above. Make sure any new handlers or interceptors you've
+# defined are included below. The order matters - they're processed top to bottom.
 
 
-# Register intent handlers
+sb = SkillBuilder()
+
 sb.add_request_handler(LaunchRequestHandler())
-sb.add_request_handler(PagerIntentHandler())
-sb.add_request_handler(KaraokeIntentHandler())
-sb.add_request_handler(DeviceIntentHandler())
+sb.add_request_handler(HelloWorldIntentHandler())
 sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(SessionEndedRequestHandler())
+sb.add_request_handler(IntentReflectorHandler()) # make sure IntentReflectorHandler is last so it doesn't override your custom intent handlers
 
-# Register exception handlers
 sb.add_exception_handler(CatchAllExceptionHandler())
 
-# TODO: Uncomment the following lines of code for request, response logs.
-# sb.add_global_request_interceptor(RequestLogger())
-# sb.add_global_response_interceptor(ResponseLogger())
-
-# Handler name that is used on AWS lambda
 lambda_handler = sb.lambda_handler()
