@@ -1,35 +1,96 @@
 {
-  "manifest": {
-    "publishingInformation": {
-      "locales": {
-        "en-US": {
-          "summary": "Sample Short Description",
-          "examplePhrases": [
-            "Alexa open hello world",
-            "Alexa tell hello world hello",
-            "Alexa ask hello world say hello"
-          ],
-          "name": "Office Hours Skill",
-          "description": "Sample Full Description"
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "say hello",
+            "intents": [
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "PagerIntent",
+                    "slots": [],
+                    "samples": [
+                        "pager",
+                        "show me pager",
+                        "show me pager template"
+                    ]
+                },
+                {
+                    "name": "KaraokeIntent",
+                    "slots": [],
+                    "samples": [
+                        "karaoke",
+                        "show me karaoke",
+                        "show me karaoke template"
+                    ]
+                },
+                {
+                    "name": "DeviceIntent",
+                    "slots": [],
+                    "samples": [
+                        "device",
+                        "devices",
+                        "show me device",
+                        "show me device template",
+                        "show me devices",
+                        "show me devices template"
+                    ]
+                },
+                {
+                    "name": "AMAZON.MoreIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NavigateSettingsIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NextIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.PageUpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.PageDownIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.PreviousIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ScrollRightIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ScrollDownIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ScrollLeftIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ScrollUpIntent",
+                    "samples": []
+                }
+            ],
+            "types": []
         }
-      },
-      "isAvailableWorldwide": true,
-      "testingInstructions": "Sample Testing Instructions.",
-      "category": "EDUCATION_AND_REFERENCE",
-      "distributionCountries": []
-    },
-    "apis": {
-      "custom": {
-        "endpoint": {
-          "sourceDir": "lambda/custom"
-        },
-        "interfaces": [
-          {
-            "type": "ALEXA_PRESENTATION_APL"
-          }
-        ]
-      }
-    },
-    "manifestVersion": "1.0"
-  }
+    }
 }
